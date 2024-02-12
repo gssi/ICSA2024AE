@@ -1,0 +1,3 @@
+ArchitectureModel: {
+Component: {name: a1, implements: A}
+} 

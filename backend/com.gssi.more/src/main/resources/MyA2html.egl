@@ -1,0 +1,19 @@
+{ "class": "go.GraphLinksModel",
+  "copiesArrays": true,
+  "copiesArrayObjects": true,
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": 
+[[%for (c in Component.all()){%]{"key":"[%=c.name%]",  "name":"[%=c.name%]", "leftArray":[ {"portColor":"#fae3d7", "portId":"left0"} ],
+ "topArray":[ {"portColor":"#d6effc", "portId":"top0"} ],
+ "bottomArray":[ {"portColor":"#ebe3fc", "portId":"bottom0"} ],
+ "rightArray":[ {"portColor":"#eaeef8", "portId":"right0"} ]}
+ [%if (hasMore){%],[%}%]
+[%}%]]
+ ,
+  "linkDataArray": [
+[%for(con in Connector.all().select(con|con.source.isDefined() and con.target.isDefined())){%]
+{"from":"[%=con.source.name%]", "to":"[%=con.target.name%]", "fromPort":"right0", "toPort":"left0" [%=(con.twoWay)?',"linkType":"twoways"':''%]}
+[%if (hasMore){%],[%}%]
+[%}%]
+ ]}

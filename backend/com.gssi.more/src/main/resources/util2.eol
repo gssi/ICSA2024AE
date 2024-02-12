@@ -1,0 +1,99 @@
+operation setupRA(raconnectors){
+
+var raconn: Set;
+
+for(conn in raconnectors){
+
+		var m = Tuple {"src" = conn.source.name,"trg"= conn.target.name, "type" =  conn.type.value};
+		if(conn.twoWay) {
+			var m2= Tuple {"src" = conn.target.name,"trg"= conn.source.name, "type" =  conn.type.value};
+			raconn.add(m2);
+		}
+		
+		raconn.add(m);
+	}
+	return raconn;
+}
+
+
+operation RA!Component getComplianceLv(raconn){
+
+var  compl =0.0;
+
+compl = self.checkRelations(raconn);
+
+return compl;
+}
+
+
+
+operation RA!Component checkRelations( raconn: Set): Real {
+  
+	var complianceLv: Sequence;
+	//allowed connectors to same comp type
+	raconn.add(new Tuple(src= self.name, trg= self.name, type = 0));
+	
+	var components = M!Component.all.select(c|c.implements.includes(self));
+	for(c in components){
+	//c.println();
+	var compliance = 0.0;
+	var connectors = M!Connector.all.select(con|con.source==c or con.target==c);
+	
+	if(connectors.size()>0) complianceLv.add((connectors.checkConnectors(raconn).sum())/connectors.size());
+	}
+	//"========".println();
+	 if(components.size()>0) return complianceLv.sum()/components.size();
+	 
+	 return 0.0;
+}
+
+
+operation Sequence<Connector> checkConnectors(raconn):  Sequence{
+
+var connectors : Set;
+//("RA:"+raconn).println(); 
+var compliance: Sequence;
+for (conn in self){
+	var connector = Tuple {"src" = conn.source.implements.name, "trg"= conn.target.implements.name, "type" =  conn.type.value};
+	 compliance.add(connector.check(raconn,self));
+	}
+	
+	return compliance;
+}
+
+operation Tuple check(raconn, connectors): Real{
+	
+	if(not raconn.exists(t|self.src.includes(t.src) and self.trg.includes(t.trg))){
+	//violation
+		return 0.0;
+	}else{
+	//allowed connection --> check cardinality
+		var raselectedcon = raconn.selectOne(t|self.src.includes(t.src) and self.trg.includes(t.trg));
+		var allconnectors = M!Connector.all.excludingAll(raconnectors);
+		//(self.src+"->"+self.trg+"|"+connectors.select(con|con.source.implements.flatten().name.exists(i|self.src.includes(i)) and con.target.implements.flatten().name.exists(i|self.trg.includes(i)))).println();
+		var size  = allconnectors.count(con|con.source.implements.flatten().name.exists(i|self.src.includes(i)) and con.target.implements.flatten().name.exists(i|self.trg.includes(i)));
+		var allowedconstraints : Sequence;
+		if( self.checkConstraints(raselectedcon, size)) {
+		return 0;
+		}
+		return 1.0;
+	}
+
+}
+
+operation String existingComponents(): Boolean{
+
+	return M!Component.all.exists(c|c.implements.flatten().name.includes(self));
+}
+
+operation Tuple checkConstraints(raselectedcon, size): Boolean{
+
+switch(raselectedcon.type){
+case 0: return false;
+case 1: return (size <> 1 );
+case 2: return size == 0;
+case 3: return (size == 0);
+default: return false;
+}
+
+}

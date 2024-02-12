@@ -1,0 +1,7 @@
+{
+  "services": [
+    {"name":"RA2HTML","url":"http://localhost:8001/RA2HTML"},
+    {"name": "myA2HTML","url": "http://localhost:8002/MyA2HTML"},
+    {"name": "Validator", "url": "http://localhost:8002/Validator"}
+  ]
+}

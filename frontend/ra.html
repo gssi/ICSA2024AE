@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
+    <link rel="stylesheet" href="custom.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    
+    <script src="https://unpkg.com/gojs@2.3.11/release/go.js"></script>
+
+    <script src="js/d3.v5.min.js" from="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/wasm/index.min.js" from="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+    <script src="js/d3-graphviz.js" from="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
+    <script src="js/metro.min.js" from="https://cdn.metroui.org.ua/v4.4.3/js/metro.min.js"></script>
+    <script src="js/ace/ace.js" from="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/eol.js" type="text/javascript"></script>
+    <script src="js/etl.js" type="text/javascript"></script>
+    <script src="js/evl.js" type="text/javascript"></script>
+    <script src="js/epl.js" type="text/javascript"></script>
+    <script src="js/egl.js" type="text/javascript"></script>
+    <script src="js/emfatic.js" type="text/javascript"></script>
+    <script src="js/RadarChart.js"></script>
+ 
+    <style>
+.critique {
+   position: absolute; /* without this positions will be erong */
+   background: rgb(247, 210, 142); /* color */ 
+   z-index: 1000; /* in front of all other markers */ 
+}
+.error {
+   position: absolute; /* without this positions will be erong */
+   background: rgb(252, 161, 115); /* color */ 
+   z-index: 1000; /* in front of all other markers */ 
+}
+.logo{
+max-width:80%;
+
+}
+    </style>
+</head>
+<body class="h-100" onresize="fit()">
+    <div id="navview" data-role="navview">
+        <div class="navview-pane">
+            <button class="pull-button">
+                <span class="default-icon-menu"></span>
+            </button>
+            <ul class="navview-menu">
+                <li class="item-header"><img src="images/logo-assistRA.png" class="logo"/></li>
+                <li class="item-separator"></li>
+                <li class="item-separator"></li>
+                <li>
+                    <a href="./" >
+                        <span class="icon"><span class="mif-example-16 mif-home"></span></span>
+                        <span class="caption">Home (back)</span>
+                    </a>
+                </li>
+                <li class="item-separator" id="examples-end"></li>
+                <li><a href="#" onclick="about(event)">
+                    <span class="icon"><span class="mif-example-16 mif-info"></span></span>
+                    <span class="caption">About</span>
+                </a></li>
+            </ul>
+        </div>
+        <div class="navview-content">
+            <div data-role="splitter"  class="h-100" data-split-mode="vertical" style="min-height: 600px;">
+              
+                <div data-role="splitter" class="h-100" data-split-sizes="50, 50" id="splitter">
+                  <div class="d-flex flex-justify-right flex-align-right" data-role="panel" data-title-caption="Compose your Reference Architecture" data-custom-buttons="myAPanelButtons"> 
+                    <div id="myRA" class="editor" style="height: 500px; width: 100%"></div>
+                </div>  
+                    <div class="d-flex flex-justify-left flex-align-left" data-role="panel" data-title-caption="Composed Reference Architecture" data-custom-buttons="modelPanelButtons"> 
+                      <div id="RAdiag" class="diagram" style="height:300px; max-height: 500px;"><div id="myDiagramDiv"
+                        style="width:100%; height:700px;"></div></div>
+                    </div>  
+                    
+                </div>
+                <div data-role="splitter"  class="h-100" data-split-mode="vertical" style="min-height: 700px;" >
+                    <div data-role="splitter" class="h-100" data-split-sizes="50, 50" id="splitter">
+                        <div class="d-flex flex-justify-left flex-align-left" data-role="panel" data-title-caption="Console" data-custom-buttons="customButtons" style="min-height: 300px;">
+                           
+                            <div data-role="splitter"  class="h-100" data-split-mode="vertical" style="min-height: 700px;" >
+                              <div id="consoleEditor" class="editor" style="min-height: 200px; width: 100%"></div>
+                              
+                           </div>
+                          </div>
+                        <div class="d-flex flex-justify-left flex-align-left" data-role="panel" data-title-caption="Validation Script"  style="min-height: 700px;">
+                          <div id="validationEditor" class="editor" style="height: 500px; width: 100%"></div>
+                        </div>
+                   
+                  
+                </div>
+                </div>
+                
+            </div>
+             </div>
+    </div>
+    <div id="about-info-box" class="info-box" data-role="infobox" data-width="80%" style="overflow-y: auto;">
+        <span class="button square closer"></span>
+            <div class="info-box-content">
+                <h3>About MORE</h3>
+                ...<br/>
+                This live environment is based and inspired to the <a href="https://www.eclipse.org/epsilon/live/">Epsilon Playground</a>.
+            </div>
+        </div>
+    <script>
+     
+     
+var json;
+var validationEditor;
+var myRA;
+//var raDiag;
+var myRADiagram ;
+var examples = {};
+var consoleEditor;
+
+function updateFlexmiEditorSyntaxHighlighting(editor) {
+        var val = editor.getSession().getValue();
+        if ((val.trim()+"").startsWith("<")) {
+            editor.getSession().setMode("ace/mode/xml");
+        }
+        else {
+            editor.getSession().setMode("ace/mode/yaml");
+        }
+    }
+        function setup(){
+          myRADiagram = new go.Diagram("myDiagramDiv",  //Diagram refers to its DIV HTML element by id
+    { 
+      layout: new go.LayeredDigraphLayout,
+      "undoManager.isEnabled": true 
+    });
+        
+          Array.from(document.querySelectorAll('.editor')).forEach(function(e) {
+            var editor = ace.edit(e);
+            editor.setTheme("ace/theme/eclipse");
+            editor.renderer.setShowGutter(false);
+            editor.setFontSize("1rem");
+            editor.setOptions({
+                fontSize: "11pt",
+                useSoftTabs: true
+            });
+        });
+       
+        validationEditor = ace.edit(document.getElementById('validationEditor'));
+        
+        myRA = ace.edit(document.getElementById('myRA'));    
+        //raDiag = ace.edit(document.getElementById('RAdiag'));     
+        consoleEditor = ace.edit(document.getElementById('consoleEditor'));
+
+        editors = [myRA, consoleEditor];
+
+        editors.forEach(e => e.setShowPrintMargin(false));
+
+        myRA.getSession().setMode("ace/mode/xml");
+        
+
+        myRA.getSession().on('change', function() {
+          updateFlexmiEditorSyntaxHighlighting(myRA);
+        });
+        
+        validationEditor.getSession().setMode("ace/mode/evl" );
+        //setEditorValue(SCEditor, json.scflexmi);
+        
+        setEditorValue(validationEditor, json.evl);
+
+        updateFlexmiEditorSyntaxHighlighting(myRA);
+
+        $(window).keydown(function(event) {
+          if ((event.metaKey && event.keyCode == 83) || (event.ctrlKey && event.keyCode == 83)) { 
+            run();
+            event.preventDefault(); 
+          }
+        });
+
+        }
+    
+        
+        function fit() {
+        document.getElementById("splitter").style.minHeight = window.innerHeight + "px";
+
+        var editorParentStyle = "flex-basis: calc(100% - 4px);";
+        var modelEditorParentStyle = editorParentStyle + ";padding:0px";
+
+        document.getElementById("consoleEditor").parentNode.style = editorParentStyle;
+       
+        document.getElementById("RAdiag").parentNode.parentNode.style = modelEditorParentStyle;
+        
+       
+        
+        editors.forEach(e => e.resize());
+       
+    }
+
+    function toggle(elementId, onEmpty) {
+        var element = document.getElementById(elementId);
+        if (element == null) return;
+
+        if (getComputedStyle(element).display == "none") {
+            element.style.display = "block";
+            if (element.innerHTML.length == 0) {
+                onEmpty();
+            }
+        }
+        else element.style.display = "none";
+    }
+
+function run() {
+ 
+  refreshDiagramRA(myRA.getValue(),"RAdiag",validationEditor.getValue());
+
+}
+
+function setEditorValue(editor, value) {
+
+        editor.setValue((value+""), 1);
+}
+
+function refreshDiagramRA( ra, diagramId, evlScript) {
+        
+        var xhr = new XMLHttpRequest();
+        var url = "http://localhost:8001/RA2HTML";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    var t = d3.transition().ease(d3.easeLinear);
+              
+                    myRADiagram.model = go.Model.fromJson(JSON.parse(json.RADiagram));
+                    
+                    if(json.errors==null){
+                      setConsoleOutput(json.output, "black");
+                    }else{
+                      setConsoleOutput(json.errors.replace("[","").replace("]","").split(",").join("\n"), "red");
+                    }
+                    
+                   
+                }
+            }
+        };
+        var data = JSON.stringify(
+            {
+              "mode": "ra",
+                "myRA": ra,
+                "evlScript": evlScript
+            }
+        );
+        xhr.send(data);
+        
+    }
+
+function setConsoleOutput(str, color) {
+
+document.getElementById("consoleEditor").style.color = color;
+consoleEditor.getSession().setUseWrapMode(false);
+
+consoleEditor.setValue(str, 1);
+
+
+}
+
+function init(diagram) {
+
+// Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+// For details, see https://gojs.net/latest/intro/buildingObjects.html
+const $ = go.GraphObject.make;  //for conciseness in defining node templates
+myDiagram = diagram;
+/*
+myDiagram =
+  new go.Diagram(diagramdiv,  //Diagram refers to its DIV HTML element by id
+    { "undoManager.isEnabled": true });
+*/
+// when the document is modified, add a "*" to the title and enable the "Save" button
+myDiagram.addDiagramListener("Modified", e => {
+  const button = document.getElementById("SaveButton");
+  if (button) button.disabled = !myDiagram.isModified;
+  const idx = document.title.indexOf("*");
+  if (myDiagram.isModified) {
+    if (idx < 0) document.title += "*";
+  } else {
+    if (idx >= 0) document.title = document.title.slice(0, idx);
+  }
+});
+
+// To simplify this code we define a function for creating a context menu button:
+function makeButton(text, action, visiblePredicate) {
+  return $("ContextMenuButton",
+    $(go.TextBlock, text),
+    { click: action },
+    // don't bother with binding GraphObject.visible if there's no predicate
+    visiblePredicate ? new go.Binding("visible", "", (o, e) => o.diagram ? visiblePredicate(o, e) : false).ofObject() : {});
+}
+
+const nodeMenu =  // context menu for each Node
+  $("ContextMenu",
+    makeButton("Copy",
+      (e, obj) => e.diagram.commandHandler.copySelection()),
+    makeButton("Delete",
+      (e, obj) => e.diagram.commandHandler.deleteSelection()),
+    $(go.Shape, "LineH", { strokeWidth: 2, height: 1, stretch: go.GraphObject.Horizontal }),
+    makeButton("Add top port",
+      (e, obj) => addPort("top")),
+    makeButton("Add left port",
+      (e, obj) => addPort("left")),
+    makeButton("Add right port",
+      (e, obj) => addPort("right")),
+    makeButton("Add bottom port",
+      (e, obj) => addPort("bottom"))
+  );
+
+  const portSize = new go.Size(8, 8);
+
+  const portMenu =  // context menu for each port
+  $("ContextMenu",
+    makeButton("Swap order",
+      (e, obj) => swapOrder(obj.part.adornedObject)),
+    makeButton("Remove port",
+      // in the click event handler, the obj.part is the Adornment;
+      // its adornedObject is the port
+      (e, obj) => removePort(obj.part.adornedObject)),
+    makeButton("Change color",
+      (e, obj) => changeColor(obj.part.adornedObject)),
+    makeButton("Remove side ports",
+      (e, obj) => removeAll(obj.part.adornedObject))
+  );
+
+// the node template
+// includes a panel on each side with an itemArray of panels containing ports
+myDiagram.nodeTemplate =
+  $(go.Node, "Table",
+    {
+      locationObjectName: "BODY",
+      locationSpot: go.Spot.Center,
+      selectionObjectName: "BODY",
+      contextMenu: nodeMenu
+    },
+    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+
+    // the body
+    $(go.Panel, "Auto",
+      {
+        row: 1, column: 1, name: "BODY",
+        stretch: go.GraphObject.Fill
+      },
+      $(go.Shape, "Rectangle",
+        {
+          fill: "#D3D3D3", stroke: "black", strokeWidth: 1,
+          minSize: new go.Size(100, 60)
+        },new go.Binding("strokeWidth", "mandatory")
+        ),
+      $(go.TextBlock,
+        { margin: 10, textAlign: "center", font: "bold 14px Segoe UI,sans-serif", stroke: "#484848", editable: true },
+        new go.Binding("text", "name").makeTwoWay()
+        )
+    ),  // end Auto Panel body
+
+    // the Panel holding the left port elements, which are themselves Panels,
+    // created for each item in the itemArray, bound to data.leftArray
+    $(go.Panel, "Vertical",
+      new go.Binding("itemArray", "leftArray"),
+      {
+        row: 1, column: 0,
+        itemTemplate:
+          $(go.Panel,
+            {
+              _side: "left",  // internal property to make it easier to tell which side it's on
+              fromSpot: go.Spot.Left, toSpot: go.Spot.Left,
+              fromLinkable: true, toLinkable: true, cursor: "pointer",
+              contextMenu: portMenu
+            },
+            new go.Binding("portId", "portId"),
+            $(go.Shape, "Rectangle",
+              {
+                stroke: null, strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(1, 0)
+              },
+              new go.Binding("fill", "portColor"))
+          )  // end itemTemplate
+      }
+    ),  // end Vertical Panel
+
+    // the Panel holding the top port elements, which are themselves Panels,
+    // created for each item in the itemArray, bound to data.topArray
+    $(go.Panel, "Horizontal",
+      new go.Binding("itemArray", "topArray"),
+      {
+        row: 0, column: 1,
+        itemTemplate:
+          $(go.Panel,
+            {
+              _side: "top",
+              fromSpot: go.Spot.Top, toSpot: go.Spot.Top,
+              fromLinkable: true, toLinkable: true, cursor: "pointer",
+              contextMenu: portMenu
+            },
+            new go.Binding("portId", "portId"),
+            $(go.Shape, "Rectangle",
+              {
+                stroke: null, strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(0, 1)
+              },
+              new go.Binding("fill", "portColor"))
+          )  // end itemTemplate
+      }
+    ),  // end Horizontal Panel
+
+    // the Panel holding the right port elements, which are themselves Panels,
+    // created for each item in the itemArray, bound to data.rightArray
+    $(go.Panel, "Vertical",
+      new go.Binding("itemArray", "rightArray"),
+      {
+        row: 1, column: 2,
+        itemTemplate:
+          $(go.Panel,
+            {
+              _side: "right",
+              fromSpot: go.Spot.Right, toSpot: go.Spot.Right,
+              fromLinkable: true, toLinkable: true, cursor: "pointer",
+              contextMenu: portMenu
+            },
+            new go.Binding("portId", "portId"),
+            $(go.Shape, "Rectangle",
+              {
+                stroke: null, strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(1, 0)
+              },
+              new go.Binding("fill", "portColor"))
+          )  // end itemTemplate
+      }
+    ),  // end Vertical Panel
+
+    // the Panel holding the bottom port elements, which are themselves Panels,
+    // created for each item in the itemArray, bound to data.bottomArray
+    $(go.Panel, "Horizontal",
+      new go.Binding("itemArray", "bottomArray"),
+      {
+        row: 2, column: 1,
+        itemTemplate:
+          $(go.Panel,
+            {
+              _side: "bottom",
+              fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom,
+              fromLinkable: true, toLinkable: true, cursor: "pointer",
+              contextMenu: portMenu
+            },
+            new go.Binding("portId", "portId"),
+            $(go.Shape, "Rectangle",
+              {
+                stroke: null, strokeWidth: 0,
+                desiredSize: portSize,
+                margin: new go.Margin(0, 1)
+              },
+              new go.Binding("fill", "portColor"))
+          )  // end itemTemplate
+      }
+    )  // end Horizontal Panel
+  );  // end Node
+
+// an orthogonal link template, reshapable and relinkable
+myDiagram.linkTemplate =
+  $(CustomLink,  // defined below
+    {
+      routing: go.Link.AvoidsNodes,
+      corner: 4,
+      curve: go.Link.JumpGap,
+      reshapable: true,
+      resegmentable: true,
+      relinkableFrom: true,
+      relinkableTo: true
+    },
+    new go.Binding("points").makeTwoWay(),
+    $(go.Shape, { stroke: "#2F4F4F", strokeWidth: 3}),
+    $(go.Shape, 
+            new go.Binding("toArrow", v => v.linkType !== 'twoways' && 'Standard')),
+  );
+
+// support double-clicking in the background to add a copy of this data as a node
+myDiagram.toolManager.clickCreatingTool.archetypeNodeData = {
+  name: "Unit",
+  leftArray: [],
+  rightArray: [],
+  topArray: [],
+  bottomArray: []
+};
+
+myDiagram.contextMenu =
+  $("ContextMenu",
+    makeButton("Paste",
+      (e, obj) => e.diagram.commandHandler.pasteSelection(e.diagram.toolManager.contextMenuTool.mouseDownPoint),
+      o => o.diagram.commandHandler.canPasteSelection(o.diagram.toolManager.contextMenuTool.mouseDownPoint)),
+    makeButton("Undo",
+      (e, obj) => e.diagram.commandHandler.undo(),
+      o => o.diagram.commandHandler.canUndo()),
+    makeButton("Redo",
+      (e, obj) => e.diagram.commandHandler.redo(),
+      o => o.diagram.commandHandler.canRedo())
+  );
+
+// load the diagram from JSON data
+//load();
+}
+
+
+// This custom-routing Link class tries to separate parallel links from each other.
+// This assumes that ports are lined up in a row/column on a side of the node.
+class CustomLink extends go.Link {
+findSidePortIndexAndCount(node, port) {
+const nodedata = node.data;
+if (nodedata !== null) {
+  const portdata = port.data;
+  const side = port._side;
+  const arr = nodedata[side + "Array"];
+  const len = arr.length;
+  for (let i = 0; i < len; i++) {
+    if (arr[i] === portdata) return [i, len];
+  }
+}
+return [-1, len];
+}
+
+computeEndSegmentLength(node, port, spot, from) {
+const esl = super.computeEndSegmentLength(node, port, spot, from);
+const other = this.getOtherPort(port);
+if (port !== null && other !== null) {
+  const thispt = port.getDocumentPoint(this.computeSpot(from));
+  const otherpt = other.getDocumentPoint(this.computeSpot(!from));
+  if (Math.abs(thispt.x - otherpt.x) > 20 || Math.abs(thispt.y - otherpt.y) > 20) {
+    const info = this.findSidePortIndexAndCount(node, port);
+    const idx = info[0];
+    const count = info[1];
+    if (port._side == "top" || port._side == "bottom") {
+      if (otherpt.x < thispt.x) {
+        return esl + 4 + idx * 8;
+      } else {
+        return esl + (count - idx - 1) * 8;
+      }
+    } else {  // left or right
+      if (otherpt.y < thispt.y) {
+        return esl + 4 + idx * 8;
+      } else {
+        return esl + (count - idx - 1) * 8;
+      }
+    }
+  }
+}
+return esl;
+}
+
+hasCurviness() {
+if (isNaN(this.curviness)) return true;
+return super.hasCurviness();
+}
+
+computeCurviness() {
+if (isNaN(this.curviness)) {
+  const fromnode = this.fromNode;
+  const fromport = this.fromPort;
+  const fromspot = this.computeSpot(true);
+  const frompt = fromport.getDocumentPoint(fromspot);
+  const tonode = this.toNode;
+  const toport = this.toPort;
+  const tospot = this.computeSpot(false);
+  const topt = toport.getDocumentPoint(tospot);
+  if (Math.abs(frompt.x - topt.x) > 20 || Math.abs(frompt.y - topt.y) > 20) {
+    if ((fromspot.equals(go.Spot.Left) || fromspot.equals(go.Spot.Right)) &&
+      (tospot.equals(go.Spot.Left) || tospot.equals(go.Spot.Right))) {
+      const fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
+      const toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
+      const c = (fromseglen - toseglen) / 2;
+      if (frompt.x + fromseglen >= topt.x - toseglen) {
+        if (frompt.y < topt.y) return c;
+        if (frompt.y > topt.y) return -c;
+      }
+    } else if ((fromspot.equals(go.Spot.Top) || fromspot.equals(go.Spot.Bottom)) &&
+      (tospot.equals(go.Spot.Top) || tospot.equals(go.Spot.Bottom))) {
+      const fromseglen = this.computeEndSegmentLength(fromnode, fromport, fromspot, true);
+      const toseglen = this.computeEndSegmentLength(tonode, toport, tospot, false);
+      const c = (fromseglen - toseglen) / 2;
+      if (frompt.x + fromseglen >= topt.x - toseglen) {
+        if (frompt.y < topt.y) return c;
+        if (frompt.y > topt.y) return -c;
+      }
+    }
+  }
+}
+return super.computeCurviness();
+}
+
+}
+function changeColor(port) {
+      myDiagram.startTransaction("colorPort");
+      const data = port.data;
+      myDiagram.model.setDataProperty(data, "portColor", getPortColor());
+      myDiagram.commitTransaction("colorPort");
+    }
+
+    // Use some pastel colors for ports
+    function getPortColor() {
+      const portColors = ["#fae3d7", "#d6effc", "#ebe3fc", "#eaeef8", "#fadfe5", "#6cafdb", "#66d6d1"]
+      return portColors[Math.floor(Math.random() * portColors.length)];
+    }
+
+    function fetchFile(name) {
+        var xhr = new XMLHttpRequest();
+        var url = "examples/" + name;
+        xhr.open("GET", url, false);
+        xhr.send(data);
+        if (xhr.status === 200) {    
+            return xhr.responseText;
+        }
+    }
+
+    function fetchExamples() {
+        var xhr = new XMLHttpRequest();
+        var url = "examples/scripts.json";
+        xhr.open("GET", url, false);
+        
+        xhr.send(data);
+       
+        if (xhr.status === 200) {    
+            var json = JSON.parse(xhr.responseText);
+            var examplesEnd = document.getElementById("examples-end");
+        
+            for (const example of json.examples) {
+                examples[example.id] = example;
+
+                // Add a link for the example to the left hand side menu
+                var li = document.createElement("li");
+                examplesEnd.parentNode.insertBefore(li, examplesEnd);
+                
+                var a = document.createElement("a");
+                a.href = "?" + example.id;
+                li.appendChild(a);
+
+                var icon = document.createElement("span");
+                icon.classList.add("icon");
+                a.appendChild(icon);
+
+                var mif = document.createElement("span");
+                mif.classList.add("mif-example-16");
+                mif.classList.add("mif-insert-template");
+                icon.appendChild(mif);
+
+                var caption = document.createElement("caption");
+                caption.innerHTML = example.title;
+
+                caption.classList.add("caption");
+                a.appendChild(caption);
+            }
+        }
+
+      }
+
+    
+
+    function fetchExample(id){
+
+      var example = examples[id];
+       
+       if (example.evl != null) example.evl = fetchFile(example.evl);
+       
+     
+       return example;
+    }
+    fetchExamples();
+
+    var content = "";
+        var url = window.location + "";
+        var questionMark = url.indexOf("?");
+
+    if (questionMark > -1) {
+        content = url.substring(questionMark+1, url.length);
+        if (examples[content] == null) {
+            var xhr = new XMLHttpRequest();
+            var url = backendConfig["ShortURLFunction"];
+            
+            xhr.open("POST", url, false);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            var data = JSON.stringify({"shortened": content});
+            xhr.send(data);
+            if (xhr.status === 200) {
+                content = atob(JSON.parse(xhr.responseText).content);
+                json = JSON.parse(content);
+                
+                //setup();
+            }
+        }
+        else {
+            json = fetchExample(content);
+           
+           
+        }
+    }
+    else {
+        json = fetchExample(Object.keys(examples)[0]);  
+       
+      
+    }
+        
+
+        setup();
+        init(myRADiagram);
+        run();
+
+      
+       
+    </script>
+    
+</body>
+</html>

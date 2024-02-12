@@ -1,0 +1,196 @@
+pre{
+var racomponents =  M!Component.all.implements.flatten().first.archmodel.architectureelements.select(c|c.isTypeOf(RA!Component));
+var raconnectors = M!Connector.all.select(con|racomponents.includes(con.source) or racomponents.includes(con.target));
+var msg: Sequence;
+//"Starting validation".println();
+}
+
+context M!Component {
+constraint OutgoingRelations {
+   	guard: self.implements.size()>0 
+    check : self.checkOutRelations()
+    message: "Violation in outgoing connectors definition for component: "+self.name+" ("+msg.concat(", ")+")"
+      }
+  constraint IncomingRelations {
+   	guard: self.implements.size()>0 
+    check : self.checkInRelations()
+    message: "Violation in incoming connectors definition for component: "+self.name+" ("+msg.concat(", ")+")"
+      }
+      
+   
+ constraint ExistingRAcompImpl{
+ 	guard: self.implements.size()>0
+    check : self.existImplementedRAComp()
+    message: self.name+ " is mapped to non-existing reference architecture component."
+ }
+}
+
+operation M!Component checkInRelations(): Boolean {
+msg.clear();
+
+var implements = self.implements;
+
+
+var incoming = self.incoming;
+
+var  allowedconn: Map = new Map();
+var required: Map= new Map();
+for(c in implements){
+//allowed connections between same implemented components
+allowedconn.put(c.name,0);
+
+	for(ic in c.incoming){
+	if(ic.source.isDefined()){
+		allowedconn.put(ic.source.name,ic.type.value);
+		
+		if(ic.type.value>0)required.put(ic.source.name,ic.type.value);
+	}
+	}
+}
+
+for(c in raconnectors.select(con|implements.includes(con.source) and con.twoWay)){
+//allowed connections from twoway connectors
+allowedconn.put(c.target.name,c.type.value);
+if(c.type.value>0)required.put(c.target.name,c.type.value);
+}
+
+var possibleviolations: Map;
+
+for(t in incoming){
+if(t.source.isDefined()){
+	for(ti in t.source.implements.flatten()){
+	
+		if(allowedconn.get(ti.name) == null){
+		msg.add("not allowed incoming connectors: "+ti.name+"("+t.source.name+"-->"+t.target.name)+")";
+		   return false;
+		 }else{
+		 //check cardinality
+			possibleviolations.put(t,incoming.select(ic|ic.source.implements.flatten().includes(ti)).checkConstraints(allowedconn, ti));
+		} 
+	}
+	}
+}
+
+if(possibleviolations.containsValue(true)) {
+msg.add("Violation in cardinality");
+return false;
+}
+//required connections
+
+var bidirectionalComp = M!Connector.all.select(con|con.source==self and con.twoWay).target.implements.flatten();
+
+for(k in required.keySet()){
+
+	if((not (incoming.source.implements.flatten().includingAll(bidirectionalComp).asSet()).name.includes(k)) and k.existingComponents() ){
+	msg.add("required incoming connector missing: "+k);
+	return false;
+	}
+}
+
+return true;
+}
+
+operation M!Component checkOutRelations(): Boolean{
+
+msg.clear();
+var implements = self.implements;
+var outgoing = self.outgoing;
+
+var  allowedconn: Map = new Map();
+var required: Map= new Map();
+for(c in implements){
+allowedconn.put(c.name,0);
+	for(oc in c.outgoing){
+	
+		allowedconn.put(oc.target.name,oc.type.value);
+		if(oc.type.value>0)required.put(oc.target.name,oc.type.value);
+	}
+}
+
+for(c in raconnectors.select(con|implements.includes(con.target) and con.twoWay)){
+//allowed connections from twoway connectors
+allowedconn.put(c.source.name,c.type.value);
+if(c.type.value>0)required.put(c.source.name,c.type.value);
+}
+
+var possibleviolations: Map;
+
+for(t in outgoing){
+if(t.target.isDefined()){
+	for(ti in t.target.implements.flatten()){
+		if(allowedconn.get(ti.name)==null){
+		msg.add("not allowed outgoing connectors: "+ti.name+"("+t.source.name+"-->"+t.target.name+")");
+		   return false;
+		 }else{
+		 //check cardinality
+		
+			possibleviolations.put(t,outgoing.select(oc|oc.target.implements.flatten().includes(ti)).checkConstraints(allowedconn, ti));
+		} 
+	}
+}	
+}
+if(possibleviolations.containsValue(true)) {
+msg.add("Violation in cardinality");
+return false;
+}
+//required connections
+
+var bidirectionalComp = M!Connector.all.select(con|con.target==self and con.twoWay).source.implements.flatten();
+
+for(k in required.keySet()){
+//outgoing.println();
+	
+	
+	if(not ((outgoing.target.implements.flatten()).includingAll(bidirectionalComp)).name.includes(k) and k.existingComponents() ){
+	msg.add("required outgoing connector missing: "+k);
+	return false;
+	}
+}
+
+return true;
+
+}
+
+
+operation String existingComponents(): Boolean{
+
+	return M!Component.all.exists(c|c.implements.flatten().name.includes(self));
+}
+
+operation M!Component existImplementedRAComp(): Boolean{
+
+return RA!Component.all().name.includesAll(self.implements.flatten().name);
+
+}
+
+operation Set<M!Connector> checkConstraints(allowedconn: Map, ti: M!Component): Boolean{
+
+var type =  allowedconn.get(ti.name);
+
+switch(type){
+case 0: return false;
+case 1: return (self.size() <> 1 );
+case 2: return self.size() == 0;
+case 3: return (self.size() == 0);
+default: return true;
+}
+
+}
+
+operation Set<M!Connector> checkConstraintsMsg(allowedconn: Map, ti: M!Component): String{
+
+var type =  allowedconn.get(ti);
+var _message="";
+switch(type){
+
+case 0: _message +="cannot fail";
+case 1: _message += "one to one: "+ self;
+case 2: _message += "one to many:" + self;
+case 3: _message += "many to one:" + self;
+default: _message +=  "";
+}
+return _message;
+}
+
+
+

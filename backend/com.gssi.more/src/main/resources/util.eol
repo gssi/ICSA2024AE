@@ -1,0 +1,190 @@
+operation RA!Component getComplianceLv(){
+
+var  compl =0.0;
+
+compl=self.checkRelations();
+
+return compl;
+}
+
+
+
+operation RA!Component checkRelations() {
+    
+    var racomponents =  M!Component.all.implements.flatten().first.archmodel.architectureelements.select(c|c.isTypeOf(RA!Component));
+	var raconnectors = M!Connector.all.select(con|racomponents.includes(con.source) or racomponents.includes(con.target));
+
+ 	var  weight_i: Real  = 1.0;
+ 	//allowed connectors
+	var raoutgoingconnectors = self.outgoing.includingAll(raconnectors.select(con|con.target.name==self.name and con.twoWay));
+	var raincomingconnectors = self.incoming.includingAll(raconnectors.select(con|con.source.name==self.name and con.twoWay));
+	
+	
+	var  weight_con_out: Real= raoutgoingconnectors.size() > 0 ? (raincomingconnectors.size()>0?0.5:1.0/raoutgoingconnectors.size()):1;
+	
+	var weight_con_in: Real = raincomingconnectors.size() > 0?(raoutgoingconnectors.includingAll(raconnectors.select(con|con.source.name==self.name and con.twoWay)).size() > 0 ? 0.5 : 1.0/raincomingconnectors.size()):1;
+	
+		
+ 	var complianceLv=0.0;
+ 	var components =M!Component.all().select(comp|comp.implements.flatten().name.includes(self.name));
+ 	
+ 	for (c in components) { 
+  	complianceLv +=  c.getLv(raconnectors,weight_con_out, weight_con_in);
+  
+	}
+	
+	
+	//"========".println();
+return complianceLv.asReal();
+}
+
+operation M!Component getLv(raconnectors, weight_con_out, weight_con_in): Real{
+	//self.name.println();
+	//var c = self;
+	
+	var complianceLv=0.0;
+	
+	var implements = self.implements;
+
+
+var incoming = self.incoming;
+var outgoing = self.outgoing;
+
+//incoming checks
+var  allowedconnin: Map = new Map();
+var requiredin: Map= new Map();
+
+var  allowedconnout: Map = new Map();
+var requiredout: Map= new Map();
+
+for(c in implements){
+//allowed connections between same implemented components
+
+	for(ic in c.incoming){
+	if(ic.source.isDefined()){
+		allowedconnin.put(ic.source.name,ic.type.value);
+		
+		if(ic.type.value>0)requiredin.put(ic.source.name,ic.type.value);
+	}
+	}
+	for(oc in c.outgoing){
+	
+		allowedconnout.put(oc.target.name,oc.type.value);
+		if(oc.type.value>0)requiredout.put(oc.target.name,oc.type.value);
+	}
+	
+}
+var scalein = (requiredin.size()>0)?requiredin.size():1;
+var scaleout = (requiredout.size()>0)?requiredout.size():1;
+
+for(c in raconnectors.select(con|implements.includes(con.source) and con.twoWay)){
+//allowed connections from twoway connectors
+allowedconnin.put(c.target.name,c.type.value);
+if(c.type.value>0)requiredin.put(c.target.name,c.type.value);
+}
+
+var possibleviolationsin: Map;
+
+for(t in incoming){
+if(t.source.isDefined()){
+	for(ti in t.source.implements.flatten()){
+	
+		if(allowedconnin.get(ti.name) == null){
+		//("not allowed incoming connectors: "+ti.name+"("+t.source.name+"-->"+t.target.name)+")";
+		  
+		 //check cardinality
+			possibleviolationsin.put(t,incoming.select(ic|ic.source.implements.flatten().includes(ti)).checkConstraints(allowedconnin, ti));
+		} 
+	}
+	}
+}
+
+if(possibleviolationsin.containsValue(true)) {
+//("Violation in cardinality");
+//weight_con_in.println(" in con");
+complianceLv-=weight_con_in/scalein;
+}
+
+for(c in raconnectors.select(con|implements.includes(con.target) and con.twoWay)){
+//allowed connections from twoway connectors
+allowedconnout.put(c.source.name,c.type.value);
+if(c.type.value>0)requiredout.put(c.source.name,c.type.value);
+}
+
+var possibleviolationsout: Map;
+
+for(t in outgoing){
+if(t.target.isDefined()){
+	for(ti in t.target.implements.flatten()){
+	
+		if(allowedconnout.get(ti.name) == null){
+		//("not allowed outgoing connectors: "+ti.name+"("+t.source.name+"-->"+t.target.name+")");
+		 //check cardinality
+		
+			possibleviolationsout.put(t,outgoing.select(oc|oc.target.implements.flatten().includes(ti)).checkConstraints(allowedconnout, ti));
+		} 
+	}
+}	
+}
+
+if( possibleviolationsout.containsValue(true)) {
+//weight_con_out.println(" out con -");
+complianceLv-=weight_con_out/scaleout;
+}
+
+//required connections
+
+var bidirectionalCompin = M!Connector.all.select(con|con.source==self and con.twoWay).target.implements.flatten();
+
+//("in required: "+requiredin).println();
+for(k in requiredin.keySet()){
+if(incoming.source.isDefined()){
+	if(((incoming.source.implements.flatten().includingAll(bidirectionalCompin).asSet()).name.includes(k)) and k.existingComponents() ){
+	//("required incoming connector missing: "+k);
+	//("required in: "+k+":"+weight_con_in/scalein).println();
+	complianceLv+=weight_con_in/scalein;
+	}
+	}
+}
+
+var bidirectionalCompout = M!Connector.all.select(con|con.target==self and con.twoWay).source.implements.flatten();
+
+ 
+ //("out required: "+requiredout).println();
+ 
+for(k in requiredout.keySet()){
+//outgoing.println();
+	if(outgoing.target.isDefined()){
+	if( ((outgoing.target.implements.flatten()).includingAll(bidirectionalCompout)).name.includes(k) and k.existingComponents() ){
+	//("required outgoing connector missing: "+k);
+	//("required out: "+k+":"+weight_con_out/scaleout).println();
+	complianceLv+=weight_con_out/scaleout;
+	}}
+}
+
+	
+	//"=======".println();
+	//if(raincomingconnectors.size()==0 and raoutgoingconnectors.size()==0) complianceLv= weight_i;
+	return (complianceLv.asReal()>0?complianceLv.asReal():0);
+	
+
+}
+
+operation String existingComponents(): Boolean{
+
+	return M!Component.all.exists(c|c.implements.flatten().name.includes(self));
+}
+
+operation Set<M!Connector> checkConstraints(allowedconn: Map, ti: M!Component): Boolean{
+
+var type =  allowedconn.get(ti.name);
+
+switch(type){
+case 0: return false;
+case 1: return (self.size() <> 1 );
+case 2: return self.size() == 0;
+case 3: return (self.size() == 0);
+default: return true;
+}
+
+}

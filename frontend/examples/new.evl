@@ -1,0 +1,23 @@
+pre{
+   var racomps = M!Component.all.implements.flatten().first.archmodel.architectureelements.select(c|c.isTypeOf(RA!Component));
+    var comps = M!Component.all.select(c|not racomps.name.includes(c.name));
+    var raimplementedcomps = comps.implements.flatten().name.asSet();
+}
+
+//unimplemented components
+  context RA!ArchitectureModel {
+  critique mandatoryComponents {
+  guard: self.name == "GenericRA"
+          check : racomps.name.forAll(rac| comps.implements.flatten().asSet().name.includes(rac))
+          message : "The RA contains unimplemented components: "+racomps.name.select(rac|not comps.implements.flatten().asSet().name.includes(rac))
+                                                            
+          }
+   }
+   
+   context M!ArchitectureModel{
+       constraint mustContainA{
+       guard: self.name=="MyA"
+           check: self.architectureelements.name.includes("d1")
+           message: "The architectural model must include a component called d1"
+       }
+   }

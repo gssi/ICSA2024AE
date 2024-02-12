@@ -1,0 +1,67 @@
+@namespace(uri="http://it.disim.univaq/architecturemodeling", prefix="architecturemodeling")
+package architecturemodeling;
+ 
+class ReferenceArchitecturalModel {
+	attr String referenceArchitecturalName;
+	val RAElement[+] raelements;
+}
+ 
+abstract class RAElement {
+	attr String name;
+	val RAAttribute[*] attributes;
+	attr boolean highlighted = false;
+	attr String archdecision;
+}
+
+class RAComponent extends RAElement {
+	val RAElement[*] child;
+	ref RAConnector[*]#targetRef incoming;
+	ref RAConnector[*]#sourceRef outgoing;
+	attr boolean mandatory;
+}
+
+class RAConnector extends RAElement {
+	ref RAComponent[1]#incoming targetRef;
+	ref RAComponent[1]#outgoing sourceRef;
+	attr boolean twoWay = false;
+}
+
+class RAAttribute {
+	attr String name;
+	ref RAValueType[1] value;
+}
+
+abstract class RAValueType {
+	attr String name;
+}
+
+class RASimpleValue extends RAValueType {
+}
+
+class RAComplexValue extends RAValueType {
+	val RAValueType[+] child;
+}
+
+
+class ArchitectureModel {
+	attr String name;
+	val ArchitectureElement[+] architectureelements;
+}
+
+class ArchitectureElement {
+	attr String name;
+	attr boolean highlighted = false;
+}
+
+class Component extends ArchitectureElement {
+	val ArchitectureElement[*] child;
+	ref Connector[*]#source outgoing;
+	ref Connector[*]#target incoming;
+	ref RAComponent[*] implements;
+}
+
+class Connector extends ArchitectureElement {
+	ref Component[1]#outgoing source;
+	ref Component[1]#incoming target;
+}
+

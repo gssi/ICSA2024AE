@@ -1,0 +1,10 @@
+ArchitectureModel: {
+
+Component: {name: DataContextBrowser},
+Component: {name: IoT Discovery},
+Component: {name: IoTBroker},
+Component: {name: IoTDevManagement},
+Connector: {source: DataContextBrowser, target: IoT Discovery},
+Connector: {source: DataContextBrowser, target: IoTDevManagement},
+Connector: {source: DataContextBrowser, target: IoTBroker}
+}

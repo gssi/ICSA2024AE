@@ -1,0 +1,10 @@
+ArchitectureModel: {
+    Component: {name: a},
+    Component: {name: b},
+    Component: {name: c},
+    Component: {name: d},
+    Component: {name: e},
+        Connector: {source: a, target: b},
+        Connector: {source: a, target: c},
+        Connector: {source: c, target: d}
+}

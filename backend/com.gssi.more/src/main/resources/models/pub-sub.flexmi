@@ -1,0 +1,10 @@
+?nsuri: http://it.disim.univaq/architecturemodeling/v2
+
+ReferenceArchitecturalModel: {
+name: Publish-Subscribe,
+Component: {name: Publisher},
+Component: {name: Subscriber},
+Component: {name: Broker}, 
+Connector: {source: Publisher, target: Broker, type: manytoone},
+Connector: {source: Broker, target: Subscriber, type: manytoone}
+}

@@ -1,0 +1,15 @@
+pre{
+   var racomps = M!Component.all.implements.flatten().first.archmodel.architectureelements.select(c|c.isTypeOf(RA!Component));
+    var comps = M!Component.all.select(c|not racomps.name.includes(c.name));
+    var raimplementedcomps = comps.implements.flatten().name.asSet();
+}
+
+//unimplemented components
+  context RA!ArchitectureModel {
+  critique mandatoryComponents {
+  guard: self.name == "IoT"
+          check : racomps.name.forAll(rac| comps.implements.flatten().asSet().name.includes(rac))
+          message : "The RA contains unimplemented components: "+racomps.name.select(rac|not comps.implements.flatten().asSet().name.includes(rac))
+                                                            
+          }
+   } 

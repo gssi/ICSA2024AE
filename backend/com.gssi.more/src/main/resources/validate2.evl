@@ -1,0 +1,127 @@
+pre{
+var racomponents =  M!Component.all.implements.flatten().first.archmodel.architectureelements.select(c|c.isTypeOf(RA!Component));
+var raconnectors = M!Connector.all.select(con|racomponents.includes(con.source) or racomponents.includes(con.target));
+
+	
+var raconn = setupRA(raconnectors);	
+setupSelfConns();
+
+var msg: Map;
+//"Starting validation".println();
+}
+
+
+context M!Component {
+constraint Relations {
+   	guard: self.implements.size()>0 
+    check : self.checkRelations(raconn)
+    message: "Violation in connectors definition for component: "+self.name+" ("+msg.get(self.name)+")"
+      }
+ 
+}
+
+operation setupSelfConns(){
+
+for(comp in racomponents){
+//allowed connectors to same comp type
+	raconn.add(new Tuple(src= comp.name, trg= comp.name, type = 0));
+}
+}
+
+operation setupRA(raconnectors){
+
+var raconn: Set;
+
+for(conn in raconnectors){
+
+		var m = Tuple {"src" = conn.source.name,"trg"= conn.target.name, "type" =  conn.type.value};
+		if(conn.twoWay) {
+			var m2= Tuple {"src" = conn.target.name,"trg"= conn.source.name, "type" =  conn.type.value};
+			raconn.add(m2);
+		}
+		
+		raconn.add(m);
+	}
+	return raconn;
+}
+
+operation M!Component checkRelations( raconn: Set) {
+
+    var c = self;
+    
+	var complianceLv: Sequence;
+	
+		
+	//c.println();
+	
+	var connectors = M!Connector.all.select(con|con.source==c or con.target==c);
+	
+	if((connectors.checkConnectors(raconn, c).count(c|c==0.0))>0) return false;
+	
+	//"========".println();
+	 //if(components.size()>0) return complianceLv.sum()/components.size();
+	 
+	return true;
+}
+
+
+operation Sequence<Connector> checkConnectors(raconn, comp){
+//self.println();
+var connectors : Set;
+//("RA:"+raconn).println(); 
+var compliance: Sequence<Real>;
+for (conn in self){
+var connector = Tuple {"comp"=comp.name, "label"= conn.source.name+"--"+conn.target.name ,"src" = conn.source.implements.name, "trg"= conn.target.implements.name, "type" =  conn.type.value};
+//connector.println();
+compliance.add(connector.checkCon(raconn,self));
+
+}
+return	 compliance;
+
+}
+
+operation Tuple checkCon(raconn, connectors): Real{
+	//self.println();
+	if(self.src.isEmpty or self.trg.isEmpty()) return 1.0;
+	if(not raconn.exists(t|( self.src.includes(t.src)) and ( self.trg.includes(t.trg)))){
+	//violation
+	//(self.src+"->"+self.trg).println();
+	msg.put(self.comp, "Violation "+self.label);
+		return 0.0;
+	}else{
+	//allowed connection --> check cardinality
+		var raselectedcon = raconn.selectOne(t|self.src.includes(t.src) and self.trg.includes(t.trg));
+		var allconnectors = M!Connector.all.excludingAll(raconnectors);
+		//(self.src+"->"+self.trg+"|"+connectors.select(con|con.source.implements.flatten().name.exists(i|self.src.includes(i)) and con.target.implements.flatten().name.exists(i|self.trg.includes(i)))).println();
+		var size  = allconnectors.count(con|con.source.implements.flatten().name.exists(i|self.src.includes(i)) and con.target.implements.flatten().name.exists(i|self.trg.includes(i)));
+		var allowedconstraints : Sequence;
+		if( self.checkConstraints(raselectedcon, size)) {
+		
+		msg.put(self.comp, "Violation "+self.label + "in cardinality");
+		return 0.0;
+		}
+		
+	}
+	return 1.0;
+
+}
+
+operation String existingComponents(): Boolean{
+
+	return M!Component.all.exists(c|c.implements.flatten().name.includes(self));
+}
+
+operation Tuple checkConstraints(raselectedcon, size): Boolean{
+
+switch(raselectedcon.type){
+case 0: return false;
+case 1: return (size <> 1 );
+case 2: return size == 0;
+case 3: return (size == 0);
+default: return false;
+}
+
+}
+
+
+

@@ -1,0 +1,50 @@
+[%
+import "util2.eol";
+var racomponents :Set;
+var raconnectors : Sequence;
+var comps: Sequence;
+if(not M!Component.all.implements.flatten().isEmpty()){
+ racomponents = M!Component.all.implements.flatten().first.archmodel.architectureelements.select(c|c.isTypeOf(RA!Component));
+ raconnectors = M!Connector.all.select(con|racomponents.includes(con.source) or racomponents.includes(con.target));
+
+
+}
+var raconn = setupRA(raconnectors);	
+comps = M!Component.all.excludingAll(racomponents);
+var compimpls=new Map;
+
+for(rac in racomponents.select(c|comps.implements.flatten().includes(c))){
+
+	compimpls.put(rac.name,comps.implements.flatten().name.count(rac.name));
+}
+var unmapped=M!Component.all.select(c|not c.implements.isDefined());
+var unmappedratio = ((unmapped.size.asDouble()/comps.size.asDouble()).asDouble())*10;
+var ratio = (10.asDouble()/comps.size().asDouble()).asDouble();
+%]
+
+[%
+var  max = 0;
+if(compimpls.size()>0){
+ var  max = compimpls.values().max();
+if(max==0) max = ((M!Component.all.size())*10)/M!Component.all.size();
+}
+%]
+
+
+[
+[% if( racomponents.size()>0){ %][
+[%for (rac in racomponents.select(c|comps.implements.flatten().includes(c))){%]
+{"area": "[%=rac.name%]","value": [%=(M!Component.all.implements.flatten().select(c|c.name==rac.name).size)*ratio%]}[%if (hasMore){%],[%}%]
+[%}%]
+[%if(unmapped.size()>0){%],{"area": "unmapped","value": [%=(unmapped.size)*ratio%]}[%}%]
+]
+[%}%]
+[% if( racomponents.size()>0 and comps.size>0){ %],[
+[%for (rac in racomponents.select(c|comps.implements.flatten().includes(c))){%]
+{"area": "[%=rac.name%]","value": [%=rac.getComplianceLv(raconn)*(M!Component.all.implements.flatten().select(c|c.name==rac.name).size)*ratio%]}[%if (hasMore){%],[%}%]
+[%}%]
+[%if(unmapped.size()>0){%],{"area": "unmapped","value": 1}[%}%]
+]
+[%}%] 
+	
+]

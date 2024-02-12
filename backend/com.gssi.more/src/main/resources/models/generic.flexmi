@@ -1,0 +1,13 @@
+?nsuri: http://it.disim.univaq/architecturemodeling/v2
+?import: genericRA.flexmi
+
+ArchitectureModel: {
+name: myA,
+Component: {name: a1, implements: A},
+Component: {name: b1, implements: B},
+Component: {name: c1, implements: C},
+Connector: {name: a1b1, source: a1, target: b1},
+Connector: {name: b1a1, source: b1, target: a1}, 
+Connector: {name: c1a1, source: c1, target: a1, twoWay},
+Connector: {name: a1c1, source: a1, target: c1}
+} 

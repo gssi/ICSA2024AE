@@ -1,0 +1,33 @@
+{
+  "examples": [
+	{
+		"id": "iot",
+		"title": "IoT",
+		"type": "ra",
+		"language": "egl",
+		"RA": "iot.flexmi",
+		"myA":"fiware.flexmi",
+		"outputType": "html",
+		"evl":"iot.evl"	
+	},
+	{
+		"id": "new",
+		"title": "New example",
+		"type": "ra",
+		"language": "egl",
+		"RA": "genericRA.flexmi",
+		"myA":"empty.flexmi",
+		"outputType": "html",
+		"evl":"new.evl"		
+	},
+	{
+		"id": "pub-sub",
+		"title": "Publish-Subscribe",
+		"type": "style",
+		"language": "egl",
+		"RA": "pub-sub.flexmi",
+		"myA":"iot.flexmi",
+		"outputType": "html"	,
+		"evl":"pub-sub.evl"	
+	}
+]}

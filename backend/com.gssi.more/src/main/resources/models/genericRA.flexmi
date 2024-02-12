@@ -1,0 +1,10 @@
+?nsuri: http://it.disim.univaq/architecturemodeling/v2
+
+ArchitecturalModel: {
+name: GenericRA,  
+Component: {name: A, mandatory},
+Component: {name: B},
+Component: {name: C},
+Connector: {name: AB, source: A, target: B, twoway, type: manytoone},
+Connector: {name: AC, source: A, target: C, type: optional}
+} 

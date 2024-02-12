@@ -1,0 +1,10 @@
+context RAComponent {
+	
+	constraint pubsub {
+	
+	    check : 
+	    false
+	    message : "The component  "+self.name+" is a broker and must have outgoing connectors to Subscribers and incoming from Publisher"
+	   
+ }
+} 

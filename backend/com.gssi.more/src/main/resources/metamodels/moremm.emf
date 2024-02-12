@@ -1,0 +1,39 @@
+@namespace(uri="http://it.disim.univaq/architecturemodeling/v2", prefix="architecturemodeling")
+package architecturemodeling;
+
+class ArchitectureModel {
+	attr String name;
+	attr String author;
+	val ArchitectureElement[+]#archmodel architectureelements;
+}
+
+class ArchitectureElement {
+	attr String name;
+	attr boolean highlighted = false;
+	ref ArchitectureModel#architectureelements archmodel;
+}
+
+class Component extends ArchitectureElement {
+	val ArchitectureElement[*] child;
+	ref Connector[*]#source outgoing;
+	ref Connector[*]#target incoming;
+	ref Component[*] implements;
+	attr Boolean mandatory=false;
+}
+
+class Connector extends ArchitectureElement {
+	ref Component[1]#outgoing source;
+	ref Component[1]#incoming target;
+	attr boolean twoWay = false;
+	attr ConnectorType[1] type;
+}
+
+enum ConnectorType {
+	optional = 0;
+	onetoone = 1;
+	onetomany =2;
+	manytoone = 3;
+	manytomany = 4;
+
+}
+

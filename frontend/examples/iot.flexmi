@@ -1,0 +1,19 @@
+ArchitecturalModel: {
+name: IoT,
+Component: {name: Application, implements: Subscriber},
+Component: {name: IoTIM, implement: Broker},
+Component: {name: Gateway, implements: Publisher},
+Component: {name: Device, implements: Publisher},
+Component: {name: Sensor},
+Component: {name: Actuator},
+Connector: {source: Application, target: IoTIM, twoWay},
+Connector: {source: Sensor, target: IoTIM, twoWay},
+Connector: {source: Actuator, target: IoTIM, twoWay},
+Connector: {source: Gateway, target: IoTIM, twoWay },
+Connector: {source: Gateway , target: Device, twoWay},
+Connector: {source: Gateway , target: Sensor, twoWay},
+Connector: {source: Gateway , target: Actuator, twoWay},
+Connector: {source: Device , target: Sensor, twoWay},
+Connector: {source: Device , target: Actuator, twoWay },
+Connector: {source: Device , target: IoTIM, twoWay }
+}
