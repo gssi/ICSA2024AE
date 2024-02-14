@@ -3,7 +3,7 @@
 - Alessio Bucaioni (Mälardalen University, Västerås, Sweden)
 - Amleto Di Salle (Gran Sasso Science Institute, L'Aquila, Italy)
 - Ludovico Iovino (Gran Sasso Science Institute, L'Aquila, Italy)
-- Leonardo Mariani (University of Milano-Bicocc, Milan, Italy)
+- Leonardo Mariani (University of Milano-Bicocca, Milan, Italy)
 - Patrizio Pelliccione (Gran Sasso Science Institute, L'Aquila, Italy)
 
 ## Abstract
