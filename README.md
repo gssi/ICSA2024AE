@@ -1,5 +1,5 @@
-# ICSA 2024 Continuous Conformance of Software Architectures
-## Artifact Evaluation Track
+# ICSA 2024 Artifact Evaluation Track
+## Continuous Conformance of Software Architectures
 - Alessio Bucaioni (Mälardalen University, Västerås, Sweden)
 - Amleto Di Salle (Gran Sasso Science Institute, L'Aquila, Italy)
 - Ludovico Iovino (Gran Sasso Science Institute, L'Aquila, Italy)
