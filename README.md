@@ -21,6 +21,8 @@ The folder structure is as follows:
 
 
 ## Backend services
+The backend is composed of 2 main services: 1) A generator for the reference architecture that can generate the graphical representation of the RA and also check whether a concrete architecture is conform to the selected RA; 2) a generator translating the concrete architecture into a graphical version.
+
 To launch the services:
 
 mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.RA2HTML -Drun.port=8001
@@ -28,4 +30,4 @@ mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.RA2HTML -Drun
 mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.MyA2HTML -Drun.port=8002
 
 ## Frontend
-The frontend folder contains a web app communicating with the backend services.
+The frontend folder contains a web app communicating with the backend services. The frontend app is simply an HTML page loading a selected RA and making calls to the backend services. 
