@@ -21,13 +21,15 @@ The folder structure is as follows:
 
 
 ## Backend services
-The backend is composed of 2 main services: 1) A generator for the reference architecture that can generate the graphical representation of the RA and also check whether a concrete architecture is conform to the selected RA; 2) a generator translating the concrete architecture into a graphical version.
+The backend is composed of 2 main services: 1) A generator for the reference architecture that can generate the graphical representation of the RA and also check whether a concrete architecture conforms to the selected RA; 2) a generator translating the concrete architecture into a graphical version, checking also if the modeled architecture is compliant to the given constraints and finally generates the dashboard charts and information about the conformance.
 
-To launch the services:
+To launch the services, run these maven commands that will expose 2 services on the ports 8001 and 8002:
 
 mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.RA2HTML -Drun.port=8001
 
 mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.MyA2HTML -Drun.port=8002
 
+These services will be called by the frontend via ajax calls.
+
 ## Frontend
-The frontend folder contains a web app communicating with the backend services. The frontend app is simply an HTML page loading a selected RA and making calls to the backend services. 
+The frontend folder contains a web app communicating with the backend services. The frontend app is simply an HTML page loading a selected RA and making calls to the backend services. The exchange of models is applied using a lightweight format called Flexmi (https://eclipse.dev/epsilon/doc/flexmi/). The backend services respond with JSON format of the required information.
