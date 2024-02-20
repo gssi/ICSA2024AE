@@ -9,7 +9,7 @@ The software requirements can be summarized as:
 * Microsoft Windows, Mac OS X or Unix Operating Systems and derived are supported
 * Latest OpenJDK 8 (or other Java distribution like Eclipse Adoptium https://adoptium.net/) is recommended. 
 * Latest [Apache Maven](https://maven.apache.org/) installed.
-* A web server like [Apache HTTP server](https://httpd.apache.org/) installed. For Mac OS or Windows, [MAMP](https://www.mamp.info/) contains a web server like Apache HTTP.
+* A web server like [Apache HTTP server](https://httpd.apache.org/) installed. For Mac OS or Windows, the [MAMP](https://www.mamp.info/) product contains a web server like Apache HTTP.
 
 
 ### Back-end services
