@@ -14,17 +14,23 @@ The software requirements can be summarized as:
 
 ### Back-end services
 To launch the services, run these maven commands that will expose two services on the ports 8001 and 8002:
-1. Open a terminal in the directory where you downloaded the source codes. Go to the `backend` folder and type the following command. 
+1. Open a terminal in the directory where you downloaded the source code. Go to the `backend` folder and type the following command. 
+
+    ```
+    mvn clean compile
+    ```
+
+2. Open a terminal in the directory where you downloaded the source code. Go to the `backend` folder and type the following command. 
 
 
     ```
-    mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.RA2HTML -Drun.port=8001
+    mvn -X function:run -Drun.functionTarget=it.gssi.cs.assistra.RA2HTML -Drun.port=8001
     ```
-2. Open a new terminal in the directory where you downloaded the source codes. Go to the `backend` folder and type the following command. 
+3. Open a terminal in the directory where you downloaded the source code. Go to the `backend` folder and type the following command. 
 
 
     ```
-    mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.MyA2HTML -Drun.port=8002
+    mvn -X function:run -Drun.functionTarget=it.gssi.cs.assistra.MyA2HTML -Drun.port=8002
     ```
 	
 ## Front-end
