@@ -3,6 +3,6 @@ backend/.DS_Store
 frontend/.DS_Store
 
 .metadata/
-backend/.classpath
-backend/.project
-backend/.settings/
+/**/.classpath
+/**/.project
+/**/.settings/
