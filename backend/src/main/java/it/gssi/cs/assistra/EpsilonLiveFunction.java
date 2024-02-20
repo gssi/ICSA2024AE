@@ -1,4 +1,4 @@
-package it.cs.gssi.ramodeling.web;
+package it.gssi.cs.assistra;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
