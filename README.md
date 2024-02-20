@@ -35,7 +35,7 @@ Figure shows an overview of the assistive modeling tool along with its workflow.
 The tool is designed as a web-based application, with the back-end services responsible for checking, manipulating, storing, and retrieving models from the central repository. The front-end provides an interface for software architects for continuously architecting software systems while ensuring their conformance.
 
 ## Front-end
-The `frontend` folder contains a web app communicating with the back-end services. The frontend app is simply an HTML page loading a selected RA and making calls to the backend services. The exchange of models is applied using a lightweight format called [Flexmi](#https://eclipse.dev/epsilon/doc/flexmi/). The back-end services respond with JSON format of the required information. By selecting a RA from the left menu will preload a reference architecture from the server and will use it for the entire modeling process. The persistency of the architectural models modeled by the user is still unimplemented and currently, we offer some exemplary models pre-loaded from client-side. 
+The `frontend` folder contains a web app communicating with the back-end services. The frontend app is simply an HTML page loading a selected RA and making calls to the backend services. The exchange of models is applied using a lightweight format called [Flexmi](https://eclipse.dev/epsilon/doc/flexmi/). The back-end services respond with JSON format of the required information. By selecting a RA from the left menu will preload a reference architecture from the server and will use it for the entire modeling process. The persistency of the architectural models modeled by the user is still unimplemented and currently, we offer some exemplary models pre-loaded from client-side. 
 
 ## Back-end services
 The back-end is composed of two main services
@@ -44,13 +44,10 @@ The back-end is composed of two main services
 
 2. A generator translating the concrete architecture into a graphical version, checking also if the modeled architecture is compliant to the given constraints and finally generates the dashboard charts and information about the conformance.
 
-To launch the services, run these maven commands that will expose 2 services on the ports 8001 and 8002:
-
-mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.RA2HTML -Drun.port=8001
-
-mvn -X function:run -Drun.functionTarget=it.cs.gssi.ramodeling.web.MyA2HTML -Drun.port=8002
-
 These services will be called by the front-end via ajax calls.
+
+To install the AssistRA tool, please follow [Installation Guide](/Install.md).
+
 
 ## References
 1. Alessio Bucaioni, Amleto Di Salle, Ludovico Iovino, Ivano Malavolta, Patrizio Pelliccione. Reference architectures modelling and compliance checking, Softw. Syst. Model. Volume 22, pages 891-917, 2023, https://doi.org/10.1007/s10270-022-01022-z
