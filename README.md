@@ -28,7 +28,7 @@ The notation used is inspired by the work in [1], which is based on a refinement
 
 Consequently, each artifact in the proposed architecture is model-based or relies on model management operations, resulting in a highly customizable and flexible tool.
 
-Figure |[Overview of the assistive modeling tool](https://github.com/gssi/ICSA2024AE/blob/main/arch-approach.png) shows an overview of the assistive modeling tool along with its workflow.
+Figure |[Overview of the assistive modeling tool](https://github.com/gssi/ICSA2024AE/blob/ca187543d68155ae65c80895c4ff210f9cd5a9be/arch-approach.png) shows an overview of the assistive modeling tool along with its workflow.
 
 The tool is designed as a web-based application, with the back-end services responsible for checking, manipulating, storing, and retrieving models from the central repository. The front-end provides an interface for software architects for continuously architecting software systems while ensuring their conformance.
 
