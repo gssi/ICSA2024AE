@@ -7,7 +7,7 @@ This document gives the instructions to install the AssistRA tool, i.e., an assi
 The software requirements can be summarized as:
 
 * Microsoft Windows, Mac OS X or Unix Operating Systems and derived are supported
-* Latest OpenJDK 8 available is recommended.
+* Latest OpenJDK 8 (or other Java distribution like Eclipse Adoptium https://adoptium.net/) is recommended. 
 * Latest [Apache Maven](https://maven.apache.org/) installed.
 * A web server like [Apache HTTP server](https://httpd.apache.org/) installed.
 
