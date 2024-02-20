@@ -3,6 +3,12 @@ backend/.DS_Store
 frontend/.DS_Store
 
 .metadata/
-/**/.classpath
-/**/.project
-/**/.settings/
+bin/
+target/
+build/
+/build.log
+.project
+.classpath
+.metadata/
+.settings/
+libs/
