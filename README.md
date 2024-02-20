@@ -11,7 +11,7 @@ Software architectures are pivotal in the success of software-intensive systems 
 
 The following public repository contains the [replication package](#systematic-literature-review-replication-package) about the used research process and tool evaluation.
 
-##Systematic Literature Review Replication package
+## Systematic Literature Review Replication package
 The slr-replication-package folder contains the replication package related to the research process and the evaluation sections.
 The folder structure is as follows:
 - the SLR folder contains the all the artefacts for the systematic literature review
