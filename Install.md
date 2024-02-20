@@ -28,6 +28,6 @@ To launch the services, run these maven commands that will expose two services o
     ```
 	
 ## Front-end
-To install the front-end, copy all files from `frontend` folder to `www/assistra` folder. If the `assist` folder does not exist, create it.
+To install the front-end, copy all files from `frontend` folder to the `www/assistra` folder. If the `assist` folder does not exist, create it.
 
 One installed front-end and back-end services, open a browser and type [http://localhost/assistra](http://localhost/assistra)
