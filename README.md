@@ -48,6 +48,7 @@ These services will be called by the front-end via ajax calls.
 
 To install the AssistRA tool, please follow [Installation Guide](/Install.md).
 
+** Once front-end and back-end services are running and installed, open a browser and type [http://localhost/assistra](http://localhost/assistra) **
 
 ## References
 1. Alessio Bucaioni, Amleto Di Salle, Ludovico Iovino, Ivano Malavolta, Patrizio Pelliccione. Reference architectures modelling and compliance checking, Softw. Syst. Model. Volume 22, pages 891-917, 2023, https://doi.org/10.1007/s10270-022-01022-z
