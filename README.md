@@ -24,11 +24,11 @@ The folder structure is as follows:
 The development of the assistive modeling tool designed to support the continuous conformance process is grounded in model-based techniques, with a focus on the concept of multi-level modeling. 
 This tool empowers software architects to specify various elements, such as architectural styles, RAs, and SAs, using a unified notation with a flexible level of abstraction. 
 This means that each SA can express its conformance to a selected RA, and this process can be iterated across different levels of abstraction employed in architecting software systems. For example, this includes compliance of RAs with architectural styles or SAs with RAs. 
-The notation used is inspired by the work in [1], which is based on a refinement of the component diagram offered by UML~\cite{cheesman2000uml} and uses the components and connectors view to describe architectures. 
+The notation used is inspired by the work in [1], which is based on a refinement of the component diagram offered by UML [2] and uses the components and connectors view to describe architectures. 
 
 Consequently, each artifact in the proposed architecture is model-based or relies on model management operations, resulting in a highly customizable and flexible tool.
 
-Figure~\ref{fig:arch-tool} shows an overview of the assistive modeling tool along with its workflow.
+Figure |[Overview of the assistive modeling tool](https://github.com/gssi/ICSA2024AE/blob/main/arch-approach.png) shows an overview of the assistive modeling tool along with its workflow.
 
 The tool is designed as a web-based application, with the back-end services responsible for checking, manipulating, storing, and retrieving models from the central repository. The front-end provides an interface for software architects for continuously architecting software systems while ensuring their conformance.
 
@@ -52,3 +52,4 @@ These services will be called by the front-end via ajax calls.
 
 ## References
 1. Alessio Bucaioni, Amleto Di Salle, Ludovico Iovino, Ivano Malavolta, Patrizio Pelliccione. Reference architectures modelling and compliance checking, Softw. Syst. Model. Volume 22, pages 891-917, 2023, https://doi.org/10.1007/s10270-022-01022-z
+2. John Cheesman, John Daniels. UML components: a simple process for specifying component-based software, 2000, Addison-Wesley Longman Publishing Co., Inc.
