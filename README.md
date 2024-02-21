@@ -9,7 +9,7 @@
 ## Abstract
 Software architectures are pivotal in the success of software-intensive systems and serve as foundational elements that significantly impact the overall software quality. Reference architectures abstract software elements, define main responsibilities and interactions within a domain and guide the architectural design of new systems. Using reference architectures offers advantages like enhanced interoperability, cost reduction through reusability, decreased project risks, improved communication, and adherence to best practices. However, these benefits are most pronounced when software architectures align with reference architectures. Deviations from prescribed reference architectures can nullify these benefits. Uncontrolled misalignment can become prohibitively expensive, necessitating costly redevelopments, with maintenance costs reaching up to 90% of development costs. Conformance-checking processes and identifying and resolving violations in the software architecture are essential to mitigate misalignment. To address these challenges, we introduce the concept of continuous conformance that is expressed as a distance function and a process supporting it. Continuous conformance quantifies the degree to which a software architecture adheres to a designated reference architecture. We operationalize this process through an assistive modeling tool to support the continuous conformance process grounded in multi-level modeling techniques. The tool empowers software architects to specify various elements in a guided way, such as architectural styles, RAs, and SAs, using a unified notation with a flexible level of abstraction. 
 
-The following public repository contains the [replication package](#systematic-literature-review-replication-package) about the used research process and tool evaluation. Moreover, it also contains the implemented assistive modeling tool named [AssistRA](#assistra-an-assistive-modeling-tool-supporting-continuous-conformance).
+The public repository contains the [replication package](#systematic-literature-review-replication-package) about the used research process and tool evaluation. Moreover, it also contains the implemented assistive modeling tool named [AssistRA](#assistra-an-assistive-modeling-tool-supporting-continuous-conformance).
 
 ## Systematic Literature Review Replication package
 The `slr-replication-package` folder contains the replication package related to the research process and the evaluation sections.
@@ -28,9 +28,9 @@ The notation used is inspired by the work in [1], which is based on a refinement
 
 Consequently, each artifact in the proposed architecture is model-based or relies on model management operations, resulting in a highly customizable and flexible tool.
 
-![Overview of the assistive modeling tool](assets/arch-approach.png) 
+The figure shows an overview of the assistive modeling tool along with its workflow.
 
-Figure shows an overview of the assistive modeling tool along with its workflow.
+![Overview of the assistive modeling tool](assets/arch-approach.png) 
 
 The tool is designed as a web-based application, with the back-end services responsible for checking, manipulating, storing, and retrieving models from the central repository. The front-end provides an interface for software architects for continuously architecting software systems while ensuring their conformance.
 
