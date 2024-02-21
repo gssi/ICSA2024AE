@@ -90,24 +90,24 @@ ArchitecturalModel: {
 }
 ```
 
-Moreover, delete the validation script example.
+Moreover, delete the provided validation script example.
 
-Then, click on the rocket icon and the IoT RA is completely defined and the component and connector view of the RA is also generated.
+Then, click on the *rocket icon* and the IoT RA is completely defined and the component and connector view of the RA is also generated.
 
 ![IoT RA definition](assets/iot-ra-definition-02.png) 
 
 The console displays the time taken to generate the conformance view and the diagram. If the console does not report errors, and the conformance view shows the radar chart all in green, it indicates that conformance has been achieved. 
 
-The defined architecture can then be submitted to the repository using the disk icon. This final step makes the defined architecture available for selection in the workspace, enabling the IoT RA architecture to be used for defining SA. 
+The defined architecture can then be submitted to the repository using the *disk icon*. This final step makes the defined architecture available for selection in the workspace, enabling the IoT RA architecture to be used for defining SA. 
 
-**Note that this first version does not implement the *Repository Manager* service.**
+**Note that this first version does not implement the *Repository Manager* service. Therefore, you cannot store the IoT RA. It is already provided in the repository through the IoT menu item**
 
 ### FIWARE concrete architecture definition
 To create the FIWARE concrete architecture, in the AssistRA tool, select the IoT RA from the repository, i.e., click on the "IoT" menu item, as shown in the Figure.
 
 ![IoT RA selection](assets/fiware-architecture-definition-01.png)
 
-The figure shows that the refinement of the FIWARE architecture led to two possible violations (click on the rocket icon), which were reported in the console, as shown in the Figure. 
+The Figure shows that the refinement of the FIWARE architecture led to two possible violations (click on the *rocket icon*), which were reported in the console, as shown in the following Figure. 
 
 ![FIWARE architecture violations](assets/fiware-architecture-definition-02.png)
 
@@ -118,7 +118,7 @@ To remove the violations, delete the last connector, i.e.,
 Connector: {source: MyApp, target: Device1, twoWay}
 ```
 
-The figure illustrates the updated FIWARE architecture where the previous violations have been addressed.
+The Figure illustrates the updated FIWARE architecture where the previous violations have been addressed.
 
 ![FIWARE architecture with red areas](assets/fiware-architecture-definition-03.png)
 
