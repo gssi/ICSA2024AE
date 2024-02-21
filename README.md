@@ -6,6 +6,16 @@
 - Leonardo Mariani (University of Milano-Bicocca, Milan, Italy)
 - Patrizio Pelliccione (Gran Sasso Science Institute, L'Aquila, Italy)
 
+## Table of Contents
+
+- [Abstract](#abstract)
+- [Systematic Literature Review Replication package](#systematic-literature-review-replication-package)
+- [AssistRA: An assistive modeling tool supporting continuous conformance](#assistra-an-assistive-modeling-tool-supporting-continuous-conformance)
+- [Usage example](#usage-example)
+- [License](#license)
+- [References](#references)
+
+
 ## Abstract
 Software architectures are pivotal in the success of software-intensive systems and serve as foundational elements that significantly impact the overall software quality. Reference architectures abstract software elements, define main responsibilities and interactions within a domain and guide the architectural design of new systems. Using reference architectures offers advantages like enhanced interoperability, cost reduction through reusability, decreased project risks, improved communication, and adherence to best practices. However, these benefits are most pronounced when software architectures align with reference architectures. Deviations from prescribed reference architectures can nullify these benefits. Uncontrolled misalignment can become prohibitively expensive, necessitating costly redevelopments, with maintenance costs reaching up to 90% of development costs. Conformance-checking processes and identifying and resolving violations in the software architecture are essential to mitigate misalignment. To address these challenges, we introduce the concept of continuous conformance that is expressed as a distance function and a process supporting it. Continuous conformance quantifies the degree to which a software architecture adheres to a designated reference architecture. We operationalize this process through an assistive modeling tool to support the continuous conformance process grounded in multi-level modeling techniques. The tool empowers software architects to specify various elements in a guided way, such as architectural styles, RAs, and SAs, using a unified notation with a flexible level of abstraction. 
 
@@ -34,10 +44,10 @@ The figure shows an overview of the assistive modeling tool along with its workf
 
 The tool is designed as a web-based application, with the back-end services responsible for checking, manipulating, storing, and retrieving models from the central repository. The front-end provides an interface for software architects for continuously architecting software systems while ensuring their conformance.
 
-## Front-end
+### Front-end
 The `frontend` folder contains a web app communicating with the back-end services. The front-end app is simply an HTML page loading a selected RA and making calls to the backend services. The exchange of models is applied using a lightweight format called [Flexmi](https://eclipse.dev/epsilon/doc/flexmi/). The back-end services respond with JSON format of the required information. By selecting a RA from the left menu will preload a reference architecture from the server and will use it for the entire modeling process. The persistency of the architectural models modeled by the user is still unimplemented and currently, we offer some exemplary models pre-loaded from client-side. 
 
-## Back-end services
+### Back-end services
 The back-end consists of two main services
 
 1. A generator for the reference architecture that can generate the graphical representation of the RA and also check whether a concrete architecture conforms to the selected RA
