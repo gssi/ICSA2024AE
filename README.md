@@ -51,15 +51,13 @@ To install the AssistRA tool, please follow [Installation Guide](/Install.md).
 **Once front-end and back-end services are running and installed, open a browser and type [http://localhost/assistra](http://localhost/assistra)**
 
 ## Usage Example
-This simple guide describes the AssistRA at work on realizing a scenario from a previous work [3, 4] to demonstrate how the continuous conformance process and supporting tool address the identified challenges. In this scenario, the authors introduce a RA for IoT systems and a set of concrete architectures conforming to the RA. One of the concrete architectures discussed is FIWARE, which we employ to test the process, tool, and workflow outlined earlier. 
-
-The IoT RA is designed to be compliant with the Publish-Subscribe architectural style. In this style, communication is expressed between three types of components: the publisher, broker, and subscriber. 
-
-To define the IoT RA, the following steps are needed:
-- [Define the IoT reference architecture](#iot-reference-architecture-definition)
-- [Define the FIWARE concrete architecture](#fiware-concrete-architecture-definition)
+This simple guide describes the AssistRA at work on realizing a scenario from a previous work [3, 4] to demonstrate how the continuous conformance process and supporting tool address the identified challenges. In this scenario, the authors introduce a RA for IoT systems and a set of concrete architectures conforming to the RA. One of the concrete architectures discussed is FIWARE, which we employ to test the process, tool, and workflow outlined earlier. Therefore, the following steps allows defining the IoT reference architecture and the FIWARE concrete architecture, respectively:
+- [IoT reference architecture](#iot-reference-architecture-definition)
+- [FIWARE concrete architecture](#fiware-concrete-architecture-definition)
 
 ### IoT reference architecture definition
+The IoT RA is designed to be compliant with the Publish-Subscribe architectural style. In this style, communication is expressed between three types of components: the publisher, broker, and subscriber. 
+
 To create the IoT RA, in the AssistRA tool, select the publish-subscribe style from the repository, i.e., click on the "Publish-Subscribe" menu item, as shown in the Figure.
 
 ![Publish-subscribe selection](assets/iot-ra-definition-01.png) 
@@ -100,13 +98,50 @@ Then, click on the rocket icon and the IoT RA is completely defined and the comp
 
 The console displays the time taken to generate the conformance view and the diagram. If the console does not report errors, and the conformance view shows the radar chart all in green, it indicates that conformance has been achieved. 
 
-The defined architecture can then be submitted to the repository. This final step makes the defined architecture available for selection in the workspace in, enabling the IoT RA architecture to be used for defining SA.
+The defined architecture can then be submitted to the repository using the disk icon. This final step makes the defined architecture available for selection in the workspace, enabling the IoT RA architecture to be used for defining SA. 
+
+**Note that this first version does not implement the *Repository Manager* service.**
 
 ### FIWARE concrete architecture definition
+To create the FIWARE concrete architecture, in the AssistRA tool, select the IoT RA from the repository, i.e., click on the "IoT" menu item, as shown in the Figure.
+
+![IoT RA selection](assets/fiware-architecture-definition-01.png)
+
+The figure shows that the refinement of the FIWARE architecture led to two possible violations (click on the rocket icon), which were reported in the console, as shown in the Figure. 
+
+![FIWARE architecture violations](assets/fiware-architecture-definition-02.png)
+
+These violations relate to *Device1* being connected to *MyApp*. This connector is illegally defined as a connection (between an application and a device), which is not expected in the IoT RA, which only considers connectors between application and IoTIM. The conformance view outlines the missing conformance on the RA component application, i.e., the red intersection with the green part. The radar chart is animated by reporting the distance to the conformance of all the implemented instances of the RA components.
+
+To remove the violations, delete the last connector, i.e., 
+```
+Connector: {source: MyApp, target: Device1, twoWay}
+```
+
+The figure illustrates the updated FIWARE architecture where the previous violations have been addressed.
+
+![FIWARE architecture with red areas](assets/fiware-architecture-definition-03.png)
+
+In the conformance view, the validation console does not report any existing problems, but the radar includes a red area. 
+ 
+To remove the red area, a new connection between *MyApp* and *Data Context Broker* has to be defined, i.e., 
+ ```
+ Connector: {source: MyApp, target: Data Context Broker, twoWay}
+ ```
+
+This connection is a legally declared connector of the RA since all the brokers are typed as IoTIM and can be linked to components of the type application.
+
+ 
+![FIWARE architecture](assets/fiware-architecture-definition-04.png)
+
+Now the radar no longer includes red areas.
 
 
 ## License
 AssistRA is Open Source software released under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html).
+
+AssistRA uses the GoJS library under the NORTHWOODS [evaluation license](https://nwoods.com/sales/info/SoftwareLicenseAgreement.pdf).
+
 
 ## References
 1. Alessio Bucaioni, Amleto Di Salle, Ludovico Iovino, Ivano Malavolta, Patrizio Pelliccione. Reference architectures modelling and compliance checking, Softw. Syst. Model. Volume 22, pages 891-917, 2023, https://doi.org/10.1007/s10270-022-01022-z
