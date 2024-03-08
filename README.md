@@ -148,7 +148,7 @@ Now the radar no longer includes red areas.
 
 
 ## License
-AssistRA is Open Source software released under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html).
+AssistRA is Open Source software released under the [Apache 2.0 license](/LICENSE.md).
 
 AssistRA uses the GoJS library under the NORTHWOODS [evaluation license](https://nwoods.com/sales/info/SoftwareLicenseAgreement.pdf).
 
