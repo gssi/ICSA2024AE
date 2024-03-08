@@ -34,4 +34,4 @@ To launch the services, run these maven commands that will expose two services o
     ```
 	
 ## Front-end
-To install the front-end, copy all files from `frontend` folder to the `www/assistra` folder. If the `assist` folder does not exist, create it.
+Once the Apache web server is installed, you can install the front end by copying all files from the `frontend` folder to the `www/assistra` folder (where www is the Apache document root folder). If the `assistra` folder does not exist, create it.
